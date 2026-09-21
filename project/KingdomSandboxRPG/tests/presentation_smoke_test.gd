@@ -33,6 +33,7 @@ func _run() -> void:
 	skills.assign_skill("power_strike", "skill_1")
 	skills.learn_skill("quick_slash")
 	skills.assign_skill("quick_slash", "skill_2")
+	player.assign_quick_item(0, "healing_potion")
 	await _snapshot("hud")
 	_check(hud.get_node("ActionBar/QuickItem4") != null, "Four reserved quick item slots")
 	_check(main.get_node("ModalUIRoot").layer > hud.layer, "Character panel above combat HUD")

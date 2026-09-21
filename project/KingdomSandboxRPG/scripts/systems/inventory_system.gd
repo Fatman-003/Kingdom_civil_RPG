@@ -11,12 +11,14 @@ var _amounts: Dictionary = {}
 
 func _ready() -> void:
 	_load_item_definitions()
+	_restore_run_state()
 
 
 func add_item(item_id: String, amount: int) -> bool:
 	if amount <= 0 or not _item_definitions.has(item_id):
 		return false
 	_amounts[item_id] = get_amount(item_id) + amount
+	_save_run_state()
 	inventory_changed.emit()
 	var bus := get_node_or_null("/root/EventBus")
 	if bus != null: bus.item_added.emit(item_id, amount)
@@ -27,6 +29,7 @@ func remove_item(item_id: String, amount: int) -> bool:
 	if amount <= 0 or not has_item(item_id, amount):
 		return false
 	_amounts[item_id] = get_amount(item_id) - amount
+	_save_run_state()
 	inventory_changed.emit()
 	return true
 
@@ -77,3 +80,23 @@ func _load_item_definitions() -> void:
 	item_file.close()
 	if typeof(parsed_data) == TYPE_DICTIONARY:
 		_item_definitions = parsed_data.get("items", {})
+
+
+func _restore_run_state() -> void:
+	var manager: Node = get_node_or_null("/root/GameManager")
+	if manager == null:
+		return
+	var saved: Variant = manager.get("inventory_amounts")
+	if saved is Dictionary:
+		_amounts.clear()
+		for item_id_variant in (saved as Dictionary).keys():
+			var item_id: String = str(item_id_variant)
+			var amount: int = maxi(int((saved as Dictionary).get(item_id_variant, 0)), 0)
+			if amount > 0 and _item_definitions.has(item_id):
+				_amounts[item_id] = amount
+
+
+func _save_run_state() -> void:
+	var manager: Node = get_node_or_null("/root/GameManager")
+	if manager != null:
+		manager.set("inventory_amounts", _amounts.duplicate())

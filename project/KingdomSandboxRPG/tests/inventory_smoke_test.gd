@@ -22,7 +22,7 @@ func _run() -> void:
 
 	screen.open_screen()
 	_check(screen.visible, "Inventory opens")
-	_check(screen.get_node("Panel/Margin/HBox/ListColumn/ItemList").get_child_count() == 11, "Owned prototype and equipment items are listed")
+	_check(screen.get_node("Panel/Margin/HBox/ListColumn/ItemList").get_child_count() == 12, "Owned prototype, potion and equipment items are listed")
 	_check(not player.request_move(Vector2i.RIGHT), "Player movement is locked while inventory is open")
 	screen.call("_select_item", 2)
 	_check(not screen.get_node("Panel/Margin/HBox/Details/NameLabel").text.is_empty(), "Selected item shows details")
@@ -30,8 +30,8 @@ func _run() -> void:
 
 	_check(inventory.remove_item("old_coin", 1), "Final item copy can be removed")
 	await process_frame
-	_check(screen.get_node("Panel/Margin/HBox/ListColumn/ItemList").get_child_count() == 10, "Zero-count item disappears during refresh")
-	for item_id in ["apple", "flower", "herb", "cheap_wine", "training_sword", "wooden_shield", "leather_armor", "simple_helmet", "copper_ring", "traveler_boots"]:
+	_check(screen.get_node("Panel/Margin/HBox/ListColumn/ItemList").get_child_count() == 11, "Zero-count item disappears during refresh")
+	for item_id in ["apple", "flower", "herb", "healing_potion", "cheap_wine", "training_sword", "wooden_shield", "leather_armor", "simple_helmet", "copper_ring", "traveler_boots"]:
 		var amount: int = inventory.get_amount(item_id)
 		if amount > 0:
 			inventory.remove_item(item_id, amount)

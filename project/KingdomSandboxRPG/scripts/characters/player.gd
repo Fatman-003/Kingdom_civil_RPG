@@ -35,9 +35,13 @@ var current_hp: int = FALLBACK_MAX_HP
 var _defeated: bool = false
 var _skill_system: SkillSystem
 var _progression: ProgressionSystem
+var _inventory: InventorySystem
 var _last_max_hp: int = FALLBACK_MAX_HP
 var _combat_cooldowns: Dictionary = {}
 var _combat_cooldown_durations: Dictionary = {}
+var _quick_item_assignments: Dictionary = {"slot_1": "", "slot_2": "", "slot_3": "", "slot_4": ""}
+var _consumable_cooldowns: Dictionary = {}
+var _consumable_cooldown_durations: Dictionary = {}
 signal hp_changed(current_hp: int, max_hp: int)
 signal defeated
 signal combat_cooldowns_changed
@@ -48,11 +52,14 @@ func configure(
 	grid_world: Node,
 	spawn_grid_position: Vector2i,
 	skill_system: SkillSystem = null,
-	progression: ProgressionSystem = null
+	progression: ProgressionSystem = null,
+	inventory: InventorySystem = null
 ) -> void:
 	_grid_world = grid_world
 	_skill_system = skill_system
 	_progression = progression
+	_inventory = inventory
+	_restore_quick_item_assignments()
 	if _progression != null:
 		if not _progression.base_stats_changed.is_connected(_on_base_stats_changed):
 			_progression.base_stats_changed.connect(_on_base_stats_changed)
@@ -150,6 +157,7 @@ func get_facing_name() -> String:
 func _process(_delta: float) -> void:
 	presentation.set_moving(_is_moving)
 	_tick_combat_cooldowns(_delta)
+	_tick_consumable_cooldowns(_delta)
 	if _defeated:
 		return
 	if _dialogue_active:
@@ -171,6 +179,10 @@ func _process(_delta: float) -> void:
 	if Input.is_action_just_pressed("attack"):
 		_try_basic_attack()
 		return
+	for quick_index in range(4):
+		if Input.is_action_just_pressed("quick_item_%d" % (quick_index + 1)):
+			_try_use_quick_item(quick_index)
+			return
 	for skill_slot: String in SkillSystem.SKILL_SLOTS:
 		if Input.is_action_just_pressed(skill_slot):
 			_try_activate_skill(skill_slot)
@@ -263,6 +275,123 @@ func take_damage(amount: int, _source: Node = null) -> void:
 		_defeated = true
 		presentation.play(ActorPresentation.State.DEATH, Vector2.DOWN, 0.3)
 		defeated.emit()
+
+
+func is_defeated() -> bool:
+	return _defeated
+
+
+func heal(amount: int) -> int:
+	if _defeated or amount <= 0:
+		return 0
+	var max_hp: int = maxi(get_current_max_hp(), 1)
+	var applied: int = mini(amount, max_hp - current_hp)
+	if applied <= 0:
+		return 0
+	current_hp += applied
+	hp_changed.emit(current_hp, max_hp)
+	presentation.play(ActorPresentation.State.SKILL_CAST, Vector2.DOWN, 0.18)
+	ActorPresentation.floating_text(self, "+%d" % applied, FantasyTheme.JADE)
+	return applied
+
+
+func get_quick_item(slot_index: int) -> String:
+	return str(_quick_item_assignments.get("slot_%d" % (slot_index + 1), ""))
+
+
+func get_quick_item_amount(slot_index: int) -> int:
+	if _inventory == null:
+		return 0
+	return _inventory.get_amount(get_quick_item(slot_index))
+
+
+func get_quick_item_definition(slot_index: int) -> Dictionary:
+	if _inventory == null:
+		return {}
+	return _inventory.get_item_definition(get_quick_item(slot_index))
+
+
+func get_quick_item_cooldown(slot_index: int) -> float:
+	var item_id: String = get_quick_item(slot_index)
+	if item_id.is_empty() or _inventory == null:
+		return 0.0
+	var definition: Dictionary = _inventory.get_item_definition(item_id)
+	return maxf(float(_consumable_cooldowns.get(_cooldown_group(definition), 0.0)), 0.0)
+
+
+func get_quick_item_cooldown_duration(slot_index: int) -> float:
+	var definition: Dictionary = get_quick_item_definition(slot_index)
+	return maxf(float(definition.get("cooldown", 0.0)), 0.0)
+
+
+func assign_quick_item(slot_index: int, item_id: String) -> bool:
+	if _inventory == null or slot_index < 0 or slot_index >= 4:
+		return false
+	var definition: Dictionary = _inventory.get_item_definition(item_id)
+	if definition.is_empty() or str(definition.get("item_type", "")).to_lower() != "consumable":
+		return false
+	_quick_item_assignments["slot_%d" % (slot_index + 1)] = item_id
+	_save_quick_item_assignments()
+	return true
+
+
+func clear_quick_item(slot_index: int) -> bool:
+	if slot_index < 0 or slot_index >= 4:
+		return false
+	_quick_item_assignments["slot_%d" % (slot_index + 1)] = ""
+	_save_quick_item_assignments()
+	return true
+
+
+func _try_use_quick_item(slot_index: int) -> bool:
+	if _inventory == null or _is_moving or _defeated:
+		return false
+	var item_id: String = get_quick_item(slot_index)
+	if item_id.is_empty() or not _inventory.has_item(item_id, 1):
+		return false
+	var definition: Dictionary = _inventory.get_item_definition(item_id)
+	if str(definition.get("item_type", "")).to_lower() != "consumable":
+		return false
+	var group: String = _cooldown_group(definition)
+	if float(_consumable_cooldowns.get(group, 0.0)) > 0.0:
+		return false
+	if int(definition.get("use_value", 0)) <= 0 or current_hp >= get_current_max_hp():
+		return false
+	var applied: int = ConsumableEffects.resolve(self, definition)
+	if applied <= 0 or not _inventory.remove_item(item_id, 1):
+		return false
+	var duration: float = maxf(float(definition.get("cooldown", 0.0)), 0.0)
+	if duration > 0.0:
+		_consumable_cooldowns[group] = duration
+		_consumable_cooldown_durations[group] = duration
+	return true
+
+
+func _cooldown_group(definition: Dictionary) -> String:
+	var group: String = str(definition.get("cooldown_group", "consumable"))
+	return group if not group.is_empty() else "consumable"
+
+
+func _tick_consumable_cooldowns(delta: float) -> void:
+	for group_variant in _consumable_cooldowns.keys():
+		var group: String = str(group_variant)
+		_consumable_cooldowns[group] = maxf(float(_consumable_cooldowns[group]) - delta, 0.0)
+
+
+func _restore_quick_item_assignments() -> void:
+	var manager: Node = get_node_or_null("/root/GameManager")
+	if manager == null:
+		return
+	var saved: Variant = manager.get("quick_item_assignments")
+	if saved is Dictionary:
+		for slot_index in range(4):
+			_quick_item_assignments["slot_%d" % (slot_index + 1)] = str((saved as Dictionary).get("slot_%d" % (slot_index + 1), ""))
+
+
+func _save_quick_item_assignments() -> void:
+	var manager: Node = get_node_or_null("/root/GameManager")
+	if manager != null:
+		manager.set("quick_item_assignments", _quick_item_assignments.duplicate())
 
 
 func get_action_cooldown_remaining(action: String) -> float:

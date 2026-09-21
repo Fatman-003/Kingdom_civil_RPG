@@ -45,6 +45,9 @@ var _selected_slot: String = "main_hand"
 var _tab_held: bool = false
 var _skill_assignment_mode: bool = false
 var _skill_assignment_slot_index: int = 0
+var _quick_assignment_mode: bool = false
+var _quick_assignment_slot_index: int = 0
+var _quick_assignment_item_id: String = ""
 
 
 func configure(
@@ -140,6 +143,11 @@ func _input(event: InputEvent) -> void:
 			open_screen()
 			_show_skills_tab()
 		get_viewport().set_input_as_handled()
+	elif visible and _quick_assignment_mode and event.is_action_pressed("stats", false):
+		_player.clear_quick_item(_quick_assignment_slot_index)
+		_quick_assignment_mode = false
+		_skill_assignment_label.visible = false
+		get_viewport().set_input_as_handled()
 	elif event.is_action_pressed("stats", false):
 		if visible and _stats_tab_active:
 			close_screen()
@@ -172,6 +180,7 @@ func open_screen() -> void:
 	if _inventory == null:
 		return
 	visible = true
+	_quick_assignment_mode = false
 	_show_tab(false)
 	_refresh()
 	_emit_event("inventory_opened")
@@ -181,6 +190,7 @@ func close_screen() -> void:
 	if not visible:
 		return
 	visible = false
+	_quick_assignment_mode = false
 	_emit_event("inventory_closed")
 
 
@@ -234,7 +244,12 @@ func _refresh_selection() -> void:
 		_owned_label.text += "\n" + _format_modifiers(modifiers)
 	var slot: String = str(definition.get("equip_slot", ""))
 	_equip_button.visible = not slot.is_empty()
-	_equip_button.text = "Unequip" if not slot.is_empty() and _equipment.get_equipped_item(slot) == str(selected_item.get("item_id", "")) else "Equip"
+	var item_type: String = str(definition.get("item_type", "")).to_lower()
+	if item_type == "consumable":
+		_equip_button.visible = true
+		_equip_button.text = "Assign Quick Slot"
+	else:
+		_equip_button.text = "Unequip" if not slot.is_empty() and _equipment.get_equipped_item(slot) == str(selected_item.get("item_id", "")) else "Equip"
 	if _equipment_tab_active:
 		_refresh_equipment_panel()
 
@@ -247,10 +262,21 @@ func _clear_details() -> void:
 	_owned_label.text = ""
 	_equip_button.visible = false
 	_skill_assignment_label.visible = false
+	_quick_assignment_mode = false
 	_refresh_equipment_panel()
 
 
 func _toggle_equipment() -> void:
+	if not _equipment_tab_active and not _items.is_empty():
+		var selected_id: String = str((_items[_selected_index] as Dictionary).get("item_id", ""))
+		var selected_definition: Dictionary = _inventory.get_item_definition(selected_id)
+		if str(selected_definition.get("item_type", "")).to_lower() == "consumable":
+			_quick_assignment_item_id = selected_id
+			_quick_assignment_mode = true
+			_quick_assignment_slot_index = 0
+			_skill_assignment_label.visible = true
+			_skill_assignment_label.text = "Assign %s\n1 / 2 / 3 / 4: Choose slot (%d)   Enter: Confirm   C: Clear   Esc: Cancel" % [str(selected_definition.get("display_name", selected_id)), _quick_assignment_slot_index + 1]
+			return
 	if _equipment_tab_active:
 		if _equipment.unequip_slot(_selected_slot):
 			_refresh_slot_cards()
@@ -819,6 +845,25 @@ func _on_progression_points_changed(_points: int) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not visible:
+		return
+	if _quick_assignment_mode:
+		for slot_index in range(4):
+			if event.is_action_pressed("quick_item_%d" % (slot_index + 1), false):
+				_quick_assignment_slot_index = slot_index
+				_skill_assignment_label.text = "Assign %s\n1 / 2 / 3 / 4: Choose slot (%d)   Enter: Confirm   C: Clear   Esc: Cancel" % [_inventory.get_item_definition(_quick_assignment_item_id).get("display_name", _quick_assignment_item_id), _quick_assignment_slot_index + 1]
+				get_viewport().set_input_as_handled()
+				return
+		if event.is_action_pressed("interact", false):
+			if _player.assign_quick_item(_quick_assignment_slot_index, _quick_assignment_item_id):
+				_quick_assignment_mode = false
+				_skill_assignment_label.visible = false
+			get_viewport().set_input_as_handled()
+			return
+		if event.is_action_pressed("pause", false):
+			_quick_assignment_mode = false
+			_skill_assignment_label.visible = false
+			get_viewport().set_input_as_handled()
+			return
 		return
 	if event.is_action_pressed("pause", false):
 		if _skills_tab_active and _skill_assignment_mode:

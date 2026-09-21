@@ -8,6 +8,14 @@ var assigned_skills: Dictionary = {
 	"skill_3": "",
 	"skill_4": "",
 }
+var quick_item_assignments: Dictionary = {
+	"slot_1": "",
+	"slot_2": "",
+	"slot_3": "",
+	"slot_4": "",
+}
+var inventory_amounts: Dictionary = {}
+var inventory_seeded: bool = false
 var equipped_items: Dictionary = {
 	"main_hand": "",
 	"off_hand": "",

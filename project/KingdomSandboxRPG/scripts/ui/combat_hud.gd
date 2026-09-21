@@ -22,10 +22,12 @@ func _ready() -> void:
 	_build_presentation()
 	_defeat.visible = false
 	_update_action_hud()
+	_update_quick_item_hud()
 
 
 func _process(_delta: float) -> void:
 	_update_action_hud()
+	_update_quick_item_hud()
 
 func _update_hp(current_hp: int, max_hp: int) -> void:
 	_hp_label.text = "HP %d / %d" % [current_hp, max_hp]
@@ -141,19 +143,60 @@ func _build_presentation() -> void:
 		slot.add_theme_stylebox_override("panel", FantasyTheme.frame(Color("#3d4748"), FantasyTheme.BRASS))
 		bar.add_child(slot)
 		var column := VBoxContainer.new()
+		column.name = "VBox"
 		slot.add_child(column)
 		var key := Label.new()
 		key.text = str(index + 1)
 		key.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		column.add_child(key)
 		var icon := ActionIcon.new()
+		icon.name = "Icon"
 		icon.item_slot = true
 		column.add_child(icon)
 		var label := Label.new()
+		label.name = "Name"
 		label.text = "Empty"
 		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		label.add_theme_font_size_override("font_size", 12)
 		column.add_child(label)
+		var quantity := Label.new()
+		quantity.name = "Quantity"
+		quantity.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		quantity.add_theme_font_size_override("font_size", 12)
+		column.add_child(quantity)
+		var cooldown := Label.new()
+		cooldown.name = "Cooldown"
+		cooldown.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		cooldown.add_theme_font_size_override("font_size", 12)
+		column.add_child(cooldown)
+
+
+func _update_quick_item_hud() -> void:
+	if _player == null:
+		return
+	for index in range(4):
+		var slot: PanelContainer = $ActionBar.get_node("QuickItem%d" % (index + 1)) as PanelContainer
+		var item_id: String = _player.get_quick_item(index)
+		var definition: Dictionary = _player.get_quick_item_definition(index)
+		var assigned: bool = not item_id.is_empty() and not definition.is_empty()
+		var amount: int = _player.get_quick_item_amount(index)
+		var cooldown: float = _player.get_quick_item_cooldown(index)
+		var unavailable: bool = _player.is_defeated() or bool(_player.get("_inventory_open")) or _player.is_dialogue_active() or bool(_player.get("_npc_interaction_open"))
+		var state: String = "EMPTY"
+		if assigned:
+			state = "UNAVAILABLE" if unavailable else ("OUT_OF_STOCK" if amount <= 0 else ("COOLDOWN" if cooldown > 0.0 else "READY"))
+		var icon: ActionIcon = slot.get_node("VBox/Icon") as ActionIcon
+		icon.state = state
+		icon.fraction = clampf(cooldown / maxf(_player.get_quick_item_cooldown_duration(index), 0.01), 0.0, 1.0)
+		icon.queue_redraw()
+		slot.modulate = Color(0.65, 0.7, 0.7) if state in ["UNAVAILABLE", "OUT_OF_STOCK"] else Color.WHITE
+		var name_label: Label = slot.get_node("VBox/Name") as Label
+		var quantity_label: Label = slot.get_node("VBox/Quantity") as Label
+		var cooldown_label: Label = slot.get_node("VBox/Cooldown") as Label
+		name_label.text = "Empty" if not assigned else str(definition.get("display_name", item_id))
+		quantity_label.text = "" if not assigned else "x%d" % amount
+		cooldown_label.text = "%.1fs" % cooldown if cooldown > 0.0 and state == "COOLDOWN" else state.capitalize()
+		cooldown_label.add_theme_color_override("font_color", FantasyTheme.JADE if state == "READY" else FantasyTheme.MUTED)
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not _defeat.visible or _restart_in_progress or not event.is_action_pressed("interact", false):

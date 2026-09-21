@@ -15,7 +15,7 @@ func _draw() -> void:
 	var tint: Color = FantasyTheme.JADE if state == "READY" else FantasyTheme.MUTED
 	if item_slot:
 		tint = FantasyTheme.BRASS
-	if state == "EMPTY" or state == "UNAVAILABLE":
+	if state == "EMPTY" or state == "UNAVAILABLE" or state == "OUT_OF_STOCK":
 		tint.a = 0.4
 	draw_arc(center, 13.0, 0.0, TAU, 24, tint, 1.0, true)
 	if state == "EMPTY":

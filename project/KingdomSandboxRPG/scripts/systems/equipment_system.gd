@@ -87,7 +87,12 @@ func _restore_run_state() -> void:
 			continue
 		var definition: Dictionary = _inventory.get_item_definition(item_id)
 		if str(definition.get("equip_slot", "")) != slot or not _inventory.has_item(item_id, 1):
-			continue
+			if str(definition.get("equip_slot", "")) != slot:
+				continue
+			# Equipped ownership is persisted separately from the available stack.
+			# Rehydrate one owned copy before moving it back into the equipped slot.
+			if not _inventory.has_item(item_id, 1):
+				_inventory.add_item(item_id, 1)
 		if _inventory.remove_item(item_id, 1):
 			_equipped[slot] = item_id
 
