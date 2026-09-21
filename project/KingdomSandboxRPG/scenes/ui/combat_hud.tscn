@@ -122,13 +122,15 @@ horizontal_alignment = 1
 layout_mode = 2
 text = "Ready"
 horizontal_alignment = 1
-[node name="Defeat" type="PanelContainer" parent="."]
+[node name="DefeatLayer" type="CanvasLayer" parent="."]
+layer = 30
+[node name="Defeat" type="PanelContainer" parent="DefeatLayer"]
 visible = false
 offset_left = 430.0
 offset_top = 250.0
 offset_right = 850.0
 offset_bottom = 470.0
-[node name="Label" type="Label" parent="Defeat"]
+[node name="Label" type="Label" parent="DefeatLayer/Defeat"]
 layout_mode = 2
 text = "YOU WERE DEFEATED\n\nEnter / Space: Restart"
 horizontal_alignment = 1

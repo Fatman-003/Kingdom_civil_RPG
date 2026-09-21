@@ -32,8 +32,12 @@ script = ExtResource("1_main")
 [node name="EffectsRoot" type="Node2D" parent="."]
 
 [node name="UIRoot" type="CanvasLayer" parent="."]
+layer = 20
 
-[node name="DebugHUD" parent="UIRoot" instance=ExtResource("4_debug_hud")]
+[node name="DebugRoot" type="CanvasLayer" parent="."]
+layer = 3
+
+[node name="DebugHUD" parent="DebugRoot" instance=ExtResource("4_debug_hud")]
 
 [node name="QuestTracker" parent="UIRoot" instance=ExtResource("17_quest_tracker")]
 

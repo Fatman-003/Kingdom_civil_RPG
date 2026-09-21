@@ -14,6 +14,8 @@ const OPTION_NAMES: Array[String] = ["Talk", "Give Gift", "Leave"]
 
 
 func _ready() -> void:
+	theme = FantasyTheme.shared()
+	_name_label.add_theme_color_override("font_color", FantasyTheme.BRASS)
 	visible = false
 	var event_bus: Node = get_node_or_null("/root/EventBus")
 	if event_bus != null:
@@ -78,6 +80,7 @@ func _refresh_options() -> void:
 	for option_index in _options.get_child_count():
 		var button: Button = _options.get_child(option_index) as Button
 		button.text = ("> " if option_index == _selected_index else "  ") + OPTION_NAMES[option_index]
+		FantasyTheme.select(button, option_index == _selected_index)
 
 
 func _unhandled_input(event: InputEvent) -> void:

@@ -55,11 +55,15 @@ var _attack_seconds_remaining: float = 0.0
 var _attack_windup_remaining: float = 0.0
 var facing_direction: FacingDirection = FacingDirection.DOWN
 var last_damage_source: Node
+var presentation: ActorPresentation
 
 signal died(monster: GridMonster)
 
 
 func _ready() -> void:
+	presentation = ActorPresentation.new()
+	add_child(presentation)
+	presentation.configure(_visual)
 	add_to_group("grid_entities")
 	current_hp = maxi(max_hp, 1)
 	grid_position = starting_grid_position
@@ -110,8 +114,8 @@ func take_damage(amount: int, source: Node = null) -> bool:
 	last_damage_source = source
 	current_hp = maxi(current_hp - resolved_damage, 0)
 	_update_hp_label()
-	_visual.modulate = Color(1, 0.5, 0.5)
-	create_tween().tween_property(_visual, "modulate", Color.WHITE, 0.12)
+	presentation.play(ActorPresentation.State.HURT)
+	ActorPresentation.floating_text(self, str(resolved_damage))
 	if is_training_dummy and current_hp == 0:
 		current_hp = maxi(max_hp, 1)
 		_update_hp_label()
@@ -172,13 +176,11 @@ func _process(delta: float) -> void:
 
 
 func _update_visual_motion() -> void:
-	if _is_moving:
-		_visual.position.y = sin(Time.get_ticks_msec() * 0.001 * 14.0) * 1.2
-	else:
-		_visual.position.y = sin(Time.get_ticks_msec() * 0.001 * 2.0) * 0.5
+	presentation.set_moving(_is_moving)
 
 
 func _begin_attack() -> void:
+	presentation.play(ActorPresentation.State.ATTACK, Vector2(_facing_to_vector()), maxf(attack_windup, 0.1))
 	combat_state = CombatState.ATTACKING
 	_attack_windup_remaining = maxf(attack_windup, 0.0)
 	if _attack_windup_remaining <= 0.0:
@@ -197,8 +199,6 @@ func _process_attack_windup(delta: float, player: Player) -> void:
 	if requires_facing and _facing_to_player(player) != _facing_to_vector():
 		return
 	player.take_damage(attack_damage, self)
-	_visual.modulate = Color(1.0, 0.85, 0.5)
-	create_tween().tween_property(_visual, "modulate", Color.WHITE, 0.1)
 
 
 func _start_move(direction: Vector2i) -> bool:
@@ -244,6 +244,8 @@ func _stop_active_movement() -> void:
 
 
 func _die() -> void:
+	presentation.play(ActorPresentation.State.DEATH)
+	ActorPresentation.death_echo(self, _visual)
 	combat_state = CombatState.DEAD
 	_attack_windup_remaining = 0.0
 	_attack_seconds_remaining = 0.0

@@ -85,7 +85,7 @@ theme_override_constants/separation = 2
 
 [node name="AdvanceLabel" type="Label" parent="PanelContainer/MarginContainer/HBoxContainer/Content"]
 layout_mode = 2
-text = "E / Space: Continue     Escape: Close"
+text = "Enter / Space: Continue     Escape: Close"
 horizontal_alignment = 2
 
 [node name="RelationshipPanel" type="VBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer"]
@@ -214,5 +214,5 @@ size_flags_vertical = 3
 
 [node name="Hint" type="Label" parent="GiftPanel/MarginContainer/Content"]
 layout_mode = 2
-text = "Up / Down: Select     E / Space: Give     Escape: Cancel"
+text = "Up / Down: Select     Enter / Space: Give     Escape: Cancel"
 horizontal_alignment = 1

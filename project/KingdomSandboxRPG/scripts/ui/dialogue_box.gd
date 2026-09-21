@@ -43,6 +43,20 @@ var _gift_mode: bool = false
 
 
 func _ready() -> void:
+	theme = FantasyTheme.shared()
+	_name_label.add_theme_color_override("font_color", FantasyTheme.BRASS)
+	_portrait.custom_minimum_size = Vector2(144, 156)
+	var portrait_frame := Panel.new()
+	portrait_frame.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	portrait_frame.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	portrait_frame.add_theme_stylebox_override("panel", FantasyTheme.frame(Color.TRANSPARENT, FantasyTheme.BRASS))
+	_portrait.add_child(portrait_frame)
+	for gauge: ProgressBar in [_affinity_negative, _trust_negative, _respect_negative]:
+		gauge.add_theme_stylebox_override("fill", FantasyTheme.frame(FantasyTheme.ROSE, FantasyTheme.ROSE, 3))
+	_advance_label.add_theme_font_size_override("font_size", 13)
+	# Keep the compact gift picker above, not over, the dialogue text/portrait.
+	_gift_panel.anchor_top = 0.35
+	_gift_panel.anchor_bottom = 0.35
 	visible = false
 	_relationship_panel.visible = false
 
@@ -107,6 +121,7 @@ func _refresh_gift_highlight() -> void:
 		var item: Dictionary = _gift_items[gift_index] as Dictionary
 		var button: Button = _gift_items_container.get_child(gift_index) as Button
 		button.text = ("> " if gift_index == _selected_gift else "  ") + "%s x%d" % [str(item.get("display_name", "Item")), int(item.get("amount", 0))]
+		FantasyTheme.select(button, gift_index == _selected_gift)
 
 
 func _on_gift_button_pressed(gift_index: int) -> void:
@@ -158,7 +173,7 @@ func _set_choices(choices: Array) -> void:
 	_choices = choices.duplicate()
 	_selected_choice = 0
 	_choice_container.visible = not _choices.is_empty()
-	_advance_label.text = "Up / Down or W / S: Select     E / Space: Confirm     Escape: Close" if not _choices.is_empty() else "E / Space: Continue     Escape: Close"
+	_advance_label.text = "Arrows: Select   Enter / Space: Confirm   Escape: Close" if not _choices.is_empty() else "Enter / Space: Continue   Escape: Close"
 	if _choices.is_empty():
 		return
 	for choice_index in _choices.size():
@@ -179,6 +194,7 @@ func _refresh_choice_highlight() -> void:
 		var choice: Dictionary = _choices[choice_index] as Dictionary
 		var button := _choice_container.get_child(choice_index) as Button
 		button.text = ("> " if choice_index == _selected_choice else "  ") + str(choice.get("text", ""))
+		FantasyTheme.select(button, choice_index == _selected_choice)
 
 
 func _on_choice_button_pressed(choice_index: int) -> void:

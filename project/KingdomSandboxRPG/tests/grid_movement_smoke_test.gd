@@ -28,6 +28,9 @@ func _run() -> void:
 		return
 
 	var room: GridTestRoom = room_scene.instantiate() as GridTestRoom
+	# This checks open-floor movement, not random NPC obstruction.
+	for npc: GridNpc in room.get_npcs():
+		npc.wandering_enabled = false
 	var player: Player = player_scene.instantiate() as Player
 	root.add_child(room)
 	root.add_child(player)

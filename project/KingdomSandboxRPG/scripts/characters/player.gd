@@ -20,6 +20,7 @@ const IDLE_BOB_SPEED: float = 2.4
 const BASIC_ATTACK_COOLDOWN: float = 0.5
 
 @onready var _visual: Node2D = $Visual
+var presentation: ActorPresentation
 
 var grid_position: Vector2i = Vector2i.ZERO
 var facing_direction: FacingDirection = FacingDirection.DOWN
@@ -72,6 +73,9 @@ func configure(
 
 
 func _ready() -> void:
+	presentation = ActorPresentation.new()
+	add_child(presentation)
+	presentation.configure(_visual)
 	add_to_group("grid_entities")
 	add_to_group("player")
 	current_hp = get_current_max_hp()
@@ -144,27 +148,23 @@ func get_facing_name() -> String:
 
 
 func _process(_delta: float) -> void:
+	presentation.set_moving(_is_moving)
 	_tick_combat_cooldowns(_delta)
 	if _defeated:
 		return
 	if _dialogue_active:
-		_visual.position.y = sin(Time.get_ticks_msec() * 0.001 * IDLE_BOB_SPEED) * IDLE_BOB_HEIGHT
 		return
 	if _inventory_open:
-		_visual.position.y = sin(Time.get_ticks_msec() * 0.001 * IDLE_BOB_SPEED) * IDLE_BOB_HEIGHT
 		return
 	if _npc_interaction_open:
-		_visual.position.y = sin(Time.get_ticks_msec() * 0.001 * IDLE_BOB_SPEED) * IDLE_BOB_HEIGHT
 		return
 
 	if _awaiting_interact_release and not Input.is_action_pressed("interact"):
 		_awaiting_interact_release = false
 
 	if _is_moving:
-		_visual.position.y = sin(Time.get_ticks_msec() * 0.001 * VISUAL_BOB_SPEED) * VISUAL_BOB_HEIGHT
 		return
 
-	_visual.position.y = sin(Time.get_ticks_msec() * 0.001 * IDLE_BOB_SPEED) * IDLE_BOB_HEIGHT
 	if not _awaiting_interact_release and Input.is_action_just_pressed("interact"):
 		request_interaction()
 		return
@@ -256,11 +256,12 @@ func take_damage(amount: int, _source: Node = null) -> void:
 	var defense: int = int(final_stats.get("defense", 0))
 	var resolved_damage: int = CombatMath.resolve_physical_damage(amount, defense)
 	current_hp = maxi(current_hp - resolved_damage, 0)
-	modulate = Color(1, 0.5, 0.5)
-	create_tween().tween_property(self, "modulate", Color.WHITE, 0.12)
+	presentation.play(ActorPresentation.State.HURT)
+	ActorPresentation.floating_text(self, str(resolved_damage), FantasyTheme.ROSE)
 	hp_changed.emit(current_hp, get_current_max_hp())
 	if current_hp == 0:
 		_defeated = true
+		presentation.play(ActorPresentation.State.DEATH, Vector2.DOWN, 0.3)
 		defeated.emit()
 
 
@@ -282,6 +283,7 @@ func _try_basic_attack() -> void:
 	if get_action_cooldown_remaining("attack") > 0.0:
 		return
 	_start_action_cooldown("attack", BASIC_ATTACK_COOLDOWN)
+	presentation.play(ActorPresentation.State.BASIC_ATTACK, Vector2(_facing_to_direction()))
 	if _grid_world != null:
 		_grid_world.debug_attack_at(grid_position + _facing_to_direction(), _get_melee_damage(), self)
 
@@ -297,6 +299,7 @@ func _try_activate_skill(skill_slot: String) -> void:
 	if get_action_cooldown_remaining(skill_slot) > 0.0:
 		return
 	_start_action_cooldown(skill_slot, cooldown)
+	presentation.play(ActorPresentation.State.SKILL_CAST, Vector2(_facing_to_direction()), 0.26)
 	if _grid_world == null:
 		return
 	var multiplier: float = maxf(float(definition.get("damage_multiplier", 1.0)), 0.0)

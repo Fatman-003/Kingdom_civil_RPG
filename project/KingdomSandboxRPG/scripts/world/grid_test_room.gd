@@ -68,8 +68,11 @@ func _process(_delta: float) -> void:
 	if player != null:
 		for pickup: LootPickup in $Pickups.get_children():
 			if pickup.grid_position == player.grid_position:
-				get_parent().get_parent().get_node("InventorySystem").add_item(pickup.item_id, pickup.amount)
-				pickup.queue_free()
+				var inventory: InventorySystem = get_parent().get_parent().get_node("InventorySystem") as InventorySystem
+				if not pickup.is_queued_for_deletion() and inventory.add_item(pickup.item_id, pickup.amount):
+					var item_name: String = str(inventory.get_item_definition(pickup.item_id).get("display_name", pickup.item_id))
+					ActorPresentation.floating_text(pickup, "+%d %s" % [pickup.amount, item_name], FantasyTheme.JADE)
+					pickup.queue_free()
 
 func debug_attack_at(cell: Vector2i, damage: int, player: Player) -> bool:
 	for monster: GridMonster in $Monsters.get_children():

@@ -12,11 +12,11 @@ extends Control
 @onready var _equipment_label: Label = $Panel/Margin/HBox/Details/EquipmentLabel
 @onready var _list_column: VBoxContainer = $Panel/Margin/HBox/ListColumn
 @onready var _details: VBoxContainer = $Panel/Margin/HBox/Details
-@onready var _inventory_tab: Button = $Panel/Margin/HBox/Tabs/InventoryTab
-@onready var _equipment_tab: Button = $Panel/Margin/HBox/Tabs/EquipmentTab
-@onready var _skills_tab: Button = $Panel/Margin/HBox/Tabs/SkillsTab
-@onready var _stats_tab: Button = $Panel/Margin/HBox/Tabs/StatsTab
-@onready var _quests_tab: Button = $Panel/Margin/HBox/Tabs/QuestsTab
+@onready var _inventory_tab: Button = $Panel/Margin/Tabs/InventoryTab
+@onready var _equipment_tab: Button = $Panel/Margin/Tabs/EquipmentTab
+@onready var _skills_tab: Button = $Panel/Margin/Tabs/SkillsTab
+@onready var _stats_tab: Button = $Panel/Margin/Tabs/StatsTab
+@onready var _quests_tab: Button = $Panel/Margin/Tabs/QuestsTab
 @onready var _character_column: VBoxContainer = $Panel/Margin/HBox/CharacterColumn
 @onready var _character_stats: VBoxContainer = $Panel/Margin/HBox/CharacterColumn/Stats
 @onready var _skill_points_label: Label = $Panel/Margin/HBox/ListColumn/SkillPoints
@@ -79,6 +79,35 @@ func configure(
 
 
 func _ready() -> void:
+	theme = FantasyTheme.shared()
+	var panel_style: StyleBoxFlat = FantasyTheme.shared().get_stylebox("panel", "PanelContainer").duplicate()
+	panel_style.content_margin_left = 28
+	panel_style.content_margin_right = 28
+	panel_style.content_margin_top = 20
+	panel_style.content_margin_bottom = 20
+	$Panel.add_theme_stylebox_override("panel", panel_style)
+	$Panel/Margin.move_child($Panel/Margin/Tabs, 0)
+	$Panel/Margin.add_theme_constant_override("separation", 16)
+	$Panel/Margin/HBox.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	$Panel/Margin/HBox.move_child(_character_column, 1)
+	$Panel.offset_left = -520
+	$Panel.offset_right = 520
+	$Panel.offset_top = -310
+	$Panel.offset_bottom = 310
+	_list_column.custom_minimum_size.x = 300
+	_list_column.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_details.custom_minimum_size.x = 290
+	_details.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	_name_label.add_theme_color_override("font_color", FantasyTheme.BRASS)
+	for label in [_description_label, _category_label, _value_label, _owned_label]:
+		label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	$Panel/Margin/HBox/ListColumn/Hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	$Panel/Margin/HBox/ListColumn/Hint.add_theme_font_size_override("font_size", 13)
+	for tab: Button in [_inventory_tab, _equipment_tab, _skills_tab, _stats_tab, _quests_tab]:
+		tab.custom_minimum_size = Vector2(100, 38)
+		tab.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		tab.focus_mode = Control.FOCUS_NONE
+	_equip_button.focus_mode = Control.FOCUS_NONE
 	visible = false
 
 
@@ -134,6 +163,9 @@ func _input(event: InputEvent) -> void:
 	elif visible and _stats_tab_active and event.is_action_pressed("interact", false):
 		_allocate_selected_stat()
 		get_viewport().set_input_as_handled()
+	elif visible and _quests_tab_active and event.is_action_pressed("interact", false):
+		_refresh_quests()
+		get_viewport().set_input_as_handled()
 
 
 func open_screen() -> void:
@@ -188,6 +220,8 @@ func _refresh_selection() -> void:
 		var item: Dictionary = _items[item_index] as Dictionary
 		var button: Button = _list.get_child(item_index) as Button
 		button.text = ("> " if item_index == _selected_index else "  ") + "%s x%d" % [str(item.get("display_name", "Item")), int(item.get("amount", 0))]
+		button.custom_minimum_size.y = 32
+		FantasyTheme.select(button, item_index == _selected_index)
 	var selected_item: Dictionary = _items[_selected_index] as Dictionary
 	var definition: Dictionary = _inventory.get_item_definition(str(selected_item.get("item_id", "")))
 	_name_label.text = str(definition.get("display_name", ""))
@@ -274,12 +308,17 @@ func _set_active_tab(tab_index: int) -> void:
 		_show_stats_content()
 	else:
 		_show_quests_content()
+	var tabs: Array[Button] = [_inventory_tab, _equipment_tab, _skills_tab, _stats_tab, _quests_tab]
+	for index in tabs.size():
+		tabs[index].disabled = false
+		FantasyTheme.select(tabs[index], index == _active_tab)
 
 
 func _show_inventory_content() -> void:
 	_list_column.visible = true
 	$Panel/Margin/HBox/ListColumn/Title.text = "INVENTORY"
 	$Panel/Margin/HBox/ListColumn/Hint.visible = true
+	$Panel/Margin/HBox/ListColumn/Hint.text = "Arrows: Select   Enter / Space: Equip   I / Esc: Close"
 	for child in _details.get_children():
 		child.visible = child != _equipment_label and child != _skill_assignment_label and child != _stats_derived
 	_equipment_label.visible = false
@@ -355,7 +394,9 @@ func _refresh_quests() -> void:
 	_selected_quest_index = clampi(_selected_quest_index, 0, quests.size() - 1)
 	for index: int in quests.size():
 		var quest: Dictionary = quests[index]; var button := Button.new(); button.alignment = HORIZONTAL_ALIGNMENT_LEFT
-		button.text = ("> " if index == _selected_quest_index else "  ") + "%s [%s]" % [str(quest.get("display_name", "Quest")), str(quest.get("state", ""))]
+		button.text = "%s\n%s" % [str(quest.get("display_name", "Quest")), str(quest.get("state", "")).replace("_", " ").capitalize()]
+		FantasyTheme.select(button, index == _selected_quest_index)
+		button.add_theme_color_override("font_color", FantasyTheme.state_color(str(quest.get("state", ""))))
 		button.pressed.connect(_select_quest.bind(index)); _list.add_child(button)
 	_show_quest_details(quests[_selected_quest_index])
 
@@ -365,10 +406,15 @@ func _select_quest(index: int) -> void:
 func _show_quest_details(quest: Dictionary) -> void:
 	_name_label.text = str(quest.get("display_name", "Quest")); _description_label.text = str(quest.get("description", ""))
 	_category_label.text = "State: " + str(quest.get("state", ""))
+	_category_label.text = _category_label.text.replace("_", " ")
+	_category_label.add_theme_color_override("font_color", FantasyTheme.state_color(str(quest.get("state", ""))))
 	_value_label.text = _quest_system.get_objective_text(str(quest.get("quest_id", "")))
 	var rewards: Dictionary = quest.get("rewards", {}) as Dictionary
 	_owned_label.text = "Rewards: %d XP" % int(rewards.get("xp", 0))
-	for reward: Dictionary in rewards.get("items", []) as Array: _owned_label.text += "\n%s x%d" % [str(reward.get("item_id", "")), int(reward.get("quantity", 0))]
+	for reward: Dictionary in rewards.get("items", []) as Array:
+		var item_id: String = str(reward.get("item_id", ""))
+		_owned_label.text += "\n%s x%d" % [str(_inventory.get_item_definition(item_id).get("display_name", item_id)), int(reward.get("quantity", 0))]
+	_equip_button.visible = false
 
 
 func _show_skills_content() -> void:
@@ -468,6 +514,7 @@ func _refresh_stats_tab() -> void:
 		plus_button.text = "+"
 		plus_button.tooltip_text = "Increase %s by 1" % _stat_display_name(stat_name)
 		plus_button.disabled = _player.get_stat_points() <= 0
+		FantasyTheme.select(plus_button, stat_index == _selected_stat_index)
 		plus_button.pressed.connect(_allocate_stat_from_button.bind(stat_name))
 		stat_row.add_child(stat_name_label)
 		stat_row.add_child(stat_value_label)
@@ -553,7 +600,7 @@ func _refresh_stat_details(stat_name: String) -> void:
 
 
 func _stat_display_name(stat_name: String) -> String:
-	return {"hp": "HP", "attack": "Attack", "defense": "Defense", "mobility": "Mobility"}.get(stat_name, stat_name)
+	return {"hp": "HP", "attack": "Attack", "defense": "Defense", "mobility": "Mobility", "luck": "Luck"}.get(stat_name, stat_name)
 
 
 func _refresh_slot_cards() -> void:
@@ -564,10 +611,11 @@ func _refresh_slot_cards() -> void:
 		var item_id: String = _equipment.get_equipped_item(slot)
 		var item_name: String = "Empty" if item_id.is_empty() else str(_inventory.get_item_definition(item_id).get("display_name", item_id))
 		var card := Button.new()
-		card.custom_minimum_size = Vector2(0, 44)
+		card.custom_minimum_size = Vector2(0, 54)
 		card.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		card.text = ("> " if slot == _selected_slot else "  ") + "%s\n     %s" % [slot.capitalize().replace("_", " "), item_name]
 		card.pressed.connect(_select_slot.bind(slot))
+		FantasyTheme.select(card, slot == _selected_slot)
 		_list.add_child(card)
 
 
@@ -588,19 +636,19 @@ func _refresh_skill_tree() -> void:
 		var state: String = _skill_system.get_skill_state(skill_id)
 		if skill_index > 0:
 			var connector: Label = Label.new()
-			connector.text = "        |\n        v"
+			connector.text = "        |"
+			connector.add_theme_font_size_override("font_size", 10)
+			connector.add_theme_color_override("font_color", FantasyTheme.BRASS)
 			connector.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 			_list.add_child(connector)
 		var card: Button = Button.new()
-		card.custom_minimum_size = Vector2(250, 58)
+		card.custom_minimum_size = Vector2(250, 40)
+		card.add_theme_font_size_override("font_size", 14)
 		card.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		card.focus_mode = Control.FOCUS_NONE
-		var prerequisites: Array = definition.get("prerequisites", []) as Array
-		var relation_text: String = ""
-		if not prerequisites.is_empty():
-			relation_text = "\n  requires: " + str(prerequisites[0])
-		card.text = ("> " if skill_index == _selected_skill_index else "  ") + "[%s] %s%s" % [state, str(definition.get("display_name", skill_id)), relation_text]
-		card.modulate = _skill_state_color(state)
+		card.text = ("> " if skill_index == _selected_skill_index else "  ") + "[%s] %s" % [state, str(definition.get("display_name", skill_id))]
+		FantasyTheme.select(card, skill_index == _selected_skill_index)
+		card.add_theme_color_override("font_color", FantasyTheme.state_color(state))
 		card.pressed.connect(_select_skill.bind(skill_index))
 		_list.add_child(card)
 
@@ -640,6 +688,11 @@ func _refresh_skill_details() -> void:
 	_name_label.text = str(definition.get("display_name", skill_id))
 	_description_label.text = str(definition.get("description", ""))
 	_category_label.text = "Type: %s   State: %s" % [str(definition.get("skill_type", "")), state]
+	var prerequisite_names: PackedStringArray = []
+	for prerequisite in definition.get("prerequisites", []):
+		prerequisite_names.append(str(_skill_system.get_skill_definition(str(prerequisite)).get("display_name", prerequisite)))
+	if not prerequisite_names.is_empty():
+		_category_label.text += "\nRequires: " + ", ".join(prerequisite_names)
 	_value_label.text = "Cooldown: %.1f sec" % float(definition.get("cooldown", 0.0))
 	_owned_label.text = "Skill Point Cost: %d" % _skill_system.get_skill_point_cost(skill_id)
 	var multiplier: float = float(definition.get("damage_multiplier", 1.0))
@@ -656,6 +709,8 @@ func _refresh_skill_details() -> void:
 			_skill_assignment_label.text = "Enter: Learn skill"
 	elif state == "LEARNED" and str(definition.get("skill_type", "")).to_upper() == "ACTIVE":
 		_skill_assignment_label.text = "Enter: Assign to Q / W / E / R"
+	elif state == "LEARNED":
+		_skill_assignment_label.text = "Passive learned"
 	else:
 		_skill_assignment_label.text = "Prerequisites not learned"
 
@@ -692,14 +747,23 @@ func _refresh_selected_slot() -> void:
 
 func _refresh_stat_cards() -> void:
 	for child in _character_stats.get_children():
+		_character_stats.remove_child(child)
 		child.queue_free()
 	var stats: Dictionary = _player.get_final_stats() if _player != null else _equipment.get_final_stats()
 	for stat_name in ["max_hp", "attack", "defense", "mobility", "luck"]:
 		var label := Label.new()
 		var short_name: String = {"max_hp":"HP", "attack":"ATK", "defense":"DEF", "mobility":"MOB", "luck":"LUCK"}.get(stat_name, stat_name)
 		var value: int = _player.get_current_max_hp() if stat_name == "max_hp" and _player != null else int(stats.get(stat_name, 0))
-		label.text = "%s   %d" % [short_name, value]
-		_character_stats.add_child(label)
+		var row := HBoxContainer.new()
+		label.text = short_name
+		label.add_theme_color_override("font_color", FantasyTheme.MUTED)
+		label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		row.add_child(label)
+		var number := Label.new()
+		number.text = str(value)
+		number.add_theme_color_override("font_color", FantasyTheme.JADE)
+		row.add_child(number)
+		_character_stats.add_child(row)
 
 
 func _format_modifiers(modifiers: Dictionary) -> String:
@@ -715,7 +779,7 @@ func _format_modifiers(modifiers: Dictionary) -> String:
 
 
 func _on_inventory_changed() -> void:
-	if visible and not _skills_tab_active and not _stats_tab_active and not _equipment_tab_active:
+	if visible and not _skills_tab_active and not _stats_tab_active and not _equipment_tab_active and not _quests_tab_active:
 		_refresh()
 
 

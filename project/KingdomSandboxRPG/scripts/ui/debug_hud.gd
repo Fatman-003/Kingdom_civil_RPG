@@ -10,6 +10,10 @@ var _elapsed_since_update: float = 0.0
 
 
 func _ready() -> void:
+	theme = FantasyTheme.shared()
+	$MarginContainer.position = Vector2(1040, 16)
+	$MarginContainer.size = Vector2(224, 140)
+	modulate = Color(0.8, 0.9, 0.86, 0.85)
 	var event_bus: Node = get_node_or_null("/root/EventBus")
 	if event_bus != null:
 		event_bus.connect("player_grid_position_changed", _on_player_grid_position_changed)
