@@ -1,0 +1,1 @@
+{"loot_tables":{"slime_loot":{"drops":[{"item_id":"slime_gel","weight":70,"min_amount":1,"max_amount":2},{"item_id":"apple","weight":25,"min_amount":1,"max_amount":1},{"item_id":"copper_ring","weight":5,"min_amount":1,"max_amount":1}]}}}

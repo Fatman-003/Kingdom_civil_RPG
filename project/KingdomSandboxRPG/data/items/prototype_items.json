@@ -1,0 +1,18 @@
+{
+  "items": {
+    "apple": { "item_id": "apple", "display_name": "Apple", "item_type": "gift", "description": "A crisp red apple.", "base_value": 2, "giftable": true },
+    "flower": { "item_id": "flower", "display_name": "Wildflower", "item_type": "gift", "description": "A small bright flower.", "base_value": 4, "giftable": true },
+    "old_coin": { "item_id": "old_coin", "display_name": "Old Coin", "item_type": "material", "description": "A worn coin from another age.", "base_value": 8, "giftable": true },
+    "herb": { "item_id": "herb", "display_name": "Herb", "item_type": "consumable", "description": "A fragrant healing herb.", "base_value": 3, "giftable": true },
+    "cheap_wine": { "item_id": "cheap_wine", "display_name": "Cheap Wine", "item_type": "gift", "description": "A modest bottle of wine.", "base_value": 5, "giftable": true },
+    "training_sword": { "item_id": "training_sword", "display_name": "Training Sword", "item_type": "weapon", "description": "Prototype practice blade.", "base_value": 10, "giftable": false, "equip_slot": "main_hand", "weapon_type": "sword", "stat_modifiers": { "attack": 3 } },
+    "wooden_shield": { "item_id": "wooden_shield", "display_name": "Wooden Shield", "item_type": "armor", "description": "Prototype wooden shield.", "base_value": 8, "giftable": false, "equip_slot": "off_hand", "stat_modifiers": { "defense": 2, "mobility": -1 } },
+    "leather_armor": { "item_id": "leather_armor", "display_name": "Leather Armor", "item_type": "armor", "description": "Prototype leather body armor.", "base_value": 12, "giftable": false, "equip_slot": "body", "stat_modifiers": { "defense": 3, "mobility": -1 } },
+    "simple_helmet": { "item_id": "simple_helmet", "display_name": "Simple Helmet", "item_type": "armor", "description": "Prototype metal helmet.", "base_value": 7, "giftable": false, "equip_slot": "head", "stat_modifiers": { "defense": 1 } },
+    "copper_ring": { "item_id": "copper_ring", "display_name": "Copper Ring", "item_type": "accessory", "description": "Prototype copper accessory.", "base_value": 6, "giftable": false, "equip_slot": "accessory", "stat_modifiers": { "speed": 1 } },
+    "lucky_test_ring": { "item_id": "lucky_test_ring", "display_name": "Lucky Test Ring", "item_type": "accessory", "description": "Prototype test accessory for Luck loot rolls.", "base_value": 1, "giftable": false, "equip_slot": "accessory", "stat_modifiers": { "luck": 20 } },
+    "traveler_boots": { "item_id": "traveler_boots", "display_name": "Traveler Boots", "item_type": "armor", "description": "Prototype boots made for long roads.", "base_value": 9, "giftable": false, "equip_slot": "boots", "stat_modifiers": { "mobility": 3 } },
+    "slime_gel": { "item_id": "slime_gel", "display_name": "Slime Gel", "item_type": "material", "description": "Sticky gel from a slime.", "base_value": 1, "giftable": true }
+    ,"healing_potion": { "item_id": "healing_potion", "display_name": "Healing Potion", "item_type": "consumable", "description": "A basic restorative supplied by the Guild.", "base_value": 12, "giftable": false }
+  }
+}

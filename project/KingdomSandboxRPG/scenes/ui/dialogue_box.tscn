@@ -1,0 +1,218 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/dialogue_box.gd" id="1_dialogue_box"]
+
+[node name="DialogueBox" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_dialogue_box")
+
+[node name="PanelContainer" type="PanelContainer" parent="."]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 0.66
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 48.0
+offset_top = -20.0
+offset_right = -48.0
+offset_bottom = -40.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 14
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PanelContainer/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Portrait" type="ColorRect" parent="PanelContainer/MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(116, 96)
+layout_mode = 2
+color = Color(0.443, 0.502, 0.588, 1)
+
+[node name="ExpressionLabel" type="Label" parent="PanelContainer/MarginContainer/HBoxContainer/Portrait"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "Neutral"
+
+[node name="PortraitTexture" type="TextureRect" parent="PanelContainer/MarginContainer/HBoxContainer/Portrait"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+expand_mode = 1
+stretch_mode = 5
+mouse_filter = 2
+
+[node name="Content" type="VBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="NameLabel" type="Label" parent="PanelContainer/MarginContainer/HBoxContainer/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "NPC"
+
+[node name="DialogueText" type="Label" parent="PanelContainer/MarginContainer/HBoxContainer/Content"]
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+size_flags_vertical = 3
+autowrap_mode = 2
+text = "Dialogue text"
+
+[node name="ChoiceContainer" type="VBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/Content"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="AdvanceLabel" type="Label" parent="PanelContainer/MarginContainer/HBoxContainer/Content"]
+layout_mode = 2
+text = "E / Space: Continue     Escape: Close"
+horizontal_alignment = 2
+
+[node name="RelationshipPanel" type="VBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer"]
+custom_minimum_size = Vector2(142, 0)
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="TitleLabel" type="Label" parent="PanelContainer/MarginContainer/HBoxContainer/RelationshipPanel"]
+layout_mode = 2
+text = "Connection"
+horizontal_alignment = 1
+
+[node name="AffinityValue" type="Label" parent="PanelContainer/MarginContainer/HBoxContainer/RelationshipPanel"]
+layout_mode = 2
+text = "Affinity  0"
+
+[node name="AffinityGauge" type="HBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/RelationshipPanel"]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="Negative" type="ProgressBar" parent="PanelContainer/MarginContainer/HBoxContainer/RelationshipPanel/AffinityGauge"]
+custom_minimum_size = Vector2(64, 10)
+layout_mode = 2
+size_flags_horizontal = 3
+fill_mode = 1
+show_percentage = false
+
+[node name="Center" type="ColorRect" parent="PanelContainer/MarginContainer/HBoxContainer/RelationshipPanel/AffinityGauge"]
+custom_minimum_size = Vector2(2, 10)
+layout_mode = 2
+color = Color(0.7, 0.7, 0.7, 1)
+
+[node name="Positive" type="ProgressBar" parent="PanelContainer/MarginContainer/HBoxContainer/RelationshipPanel/AffinityGauge"]
+custom_minimum_size = Vector2(64, 10)
+layout_mode = 2
+size_flags_horizontal = 3
+show_percentage = false
+
+[node name="TrustValue" type="Label" parent="PanelContainer/MarginContainer/HBoxContainer/RelationshipPanel"]
+layout_mode = 2
+text = "Trust  0"
+
+[node name="TrustGauge" type="HBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/RelationshipPanel"]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="Negative" type="ProgressBar" parent="PanelContainer/MarginContainer/HBoxContainer/RelationshipPanel/TrustGauge"]
+custom_minimum_size = Vector2(64, 10)
+layout_mode = 2
+size_flags_horizontal = 3
+fill_mode = 1
+show_percentage = false
+
+[node name="Center" type="ColorRect" parent="PanelContainer/MarginContainer/HBoxContainer/RelationshipPanel/TrustGauge"]
+custom_minimum_size = Vector2(2, 10)
+layout_mode = 2
+color = Color(0.7, 0.7, 0.7, 1)
+
+[node name="Positive" type="ProgressBar" parent="PanelContainer/MarginContainer/HBoxContainer/RelationshipPanel/TrustGauge"]
+custom_minimum_size = Vector2(64, 10)
+layout_mode = 2
+size_flags_horizontal = 3
+show_percentage = false
+
+[node name="RespectValue" type="Label" parent="PanelContainer/MarginContainer/HBoxContainer/RelationshipPanel"]
+layout_mode = 2
+text = "Respect  0"
+
+[node name="RespectGauge" type="HBoxContainer" parent="PanelContainer/MarginContainer/HBoxContainer/RelationshipPanel"]
+layout_mode = 2
+theme_override_constants/separation = 1
+
+[node name="Negative" type="ProgressBar" parent="PanelContainer/MarginContainer/HBoxContainer/RelationshipPanel/RespectGauge"]
+custom_minimum_size = Vector2(64, 10)
+layout_mode = 2
+size_flags_horizontal = 3
+fill_mode = 1
+show_percentage = false
+
+[node name="Center" type="ColorRect" parent="PanelContainer/MarginContainer/HBoxContainer/RelationshipPanel/RespectGauge"]
+custom_minimum_size = Vector2(2, 10)
+layout_mode = 2
+color = Color(0.7, 0.7, 0.7, 1)
+
+[node name="Positive" type="ProgressBar" parent="PanelContainer/MarginContainer/HBoxContainer/RelationshipPanel/RespectGauge"]
+custom_minimum_size = Vector2(64, 10)
+layout_mode = 2
+size_flags_horizontal = 3
+show_percentage = false
+
+[node name="GiftPanel" type="PanelContainer" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -160.0
+offset_top = -120.0
+offset_right = 160.0
+offset_bottom = 120.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="GiftPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 14
+
+[node name="Content" type="VBoxContainer" parent="GiftPanel/MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="Title" type="Label" parent="GiftPanel/MarginContainer/Content"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Give Gift"
+horizontal_alignment = 1
+
+[node name="Items" type="VBoxContainer" parent="GiftPanel/MarginContainer/Content"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Hint" type="Label" parent="GiftPanel/MarginContainer/Content"]
+layout_mode = 2
+text = "Up / Down: Select     E / Space: Give     Escape: Cancel"
+horizontal_alignment = 1

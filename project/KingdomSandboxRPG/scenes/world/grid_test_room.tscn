@@ -1,0 +1,162 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/world/grid_test_room.gd" id="1_grid_test_room"]
+[ext_resource type="PackedScene" path="res://scenes/characters/npc.tscn" id="2_npc"]
+[ext_resource type="PackedScene" path="res://scenes/characters/monster.tscn" id="3_monster"]
+
+[node name="GridTestRoom" type="Node2D"]
+script = ExtResource("1_grid_test_room")
+
+[node name="NPCs" type="Node2D" parent="."]
+[node name="GuildMaster" parent="NPCs" instance=ExtResource("2_npc")]
+starting_grid_position = Vector2i(16, 18)
+placeholder_color = Color(0.92, 0.76, 0.3, 1)
+visual_polygon = PackedVector2Array(0, -13, 11, -4, 8, 11, -8, 11, -11, -4)
+wandering_enabled = false
+npc_id = "guild_master"
+display_name = "Guild Master"
+dialogue_id = "guild_master_intro"
+
+[node name="NPC_A" parent="NPCs" instance=ExtResource("2_npc")]
+starting_grid_position = Vector2i(28, 22)
+placeholder_color = Color(0.91, 0.43, 0.43, 1)
+npc_id = "npc_a"
+display_name = "Arin"
+dialogue_id = "arin_intro"
+liked_gifts = ["flower", "old_coin"]
+disliked_gifts = ["cheap_wine"]
+
+[node name="NPC_B" parent="NPCs" instance=ExtResource("2_npc")]
+starting_grid_position = Vector2i(9, 23)
+placeholder_color = Color(0.52, 0.8, 0.4, 1)
+visual_polygon = PackedVector2Array(-10, -10, 10, -10, 10, 10, -10, 10)
+npc_id = "npc_b"
+display_name = "Mira"
+dialogue_id = "mira_intro"
+liked_gifts = ["herb", "apple"]
+disliked_gifts = ["old_coin"]
+
+[node name="NPC_C" parent="NPCs" instance=ExtResource("2_npc")]
+starting_grid_position = Vector2i(34, 22)
+placeholder_color = Color(0.72, 0.51, 0.93, 1)
+visual_polygon = PackedVector2Array(0, -12, 11, 9, -11, 9)
+npc_id = "npc_c"
+display_name = "Rowan"
+dialogue_id = "rowan_intro"
+liked_gifts = ["cheap_wine"]
+disliked_gifts = ["flower"]
+
+[node name="Props" type="Node2D" parent="."]
+[node name="House" type="Node2D" parent="Props"]
+position = Vector2(208, 624)
+[node name="Roof" type="Polygon2D" parent="Props/House"]
+polygon = PackedVector2Array(-52, -12, 0, -46, 52, -12)
+color = Color(0.72, 0.33, 0.29, 1)
+[node name="Body" type="Polygon2D" parent="Props/House"]
+polygon = PackedVector2Array(-42, -12, 42, -12, 42, 28, -42, 28)
+color = Color(0.72, 0.59, 0.4, 1)
+[node name="Door" type="Polygon2D" parent="Props/House"]
+polygon = PackedVector2Array(-8, 4, 8, 4, 8, 28, -8, 28)
+color = Color(0.24, 0.17, 0.17, 1)
+
+[node name="Tree" type="Node2D" parent="Props"]
+position = Vector2(304, 112)
+[node name="Trunk" type="Polygon2D" parent="Props/Tree"]
+polygon = PackedVector2Array(-4, -4, 4, -4, 5, 20, -5, 20)
+color = Color(0.34, 0.22, 0.14, 1)
+[node name="Canopy" type="Polygon2D" parent="Props/Tree"]
+polygon = PackedVector2Array(0, -34, 20, -18, 24, 3, 10, 17, -11, 17, -24, 2, -20, -18)
+color = Color(0.25, 0.6, 0.36, 1)
+
+[node name="Lamp" type="Node2D" parent="Props"]
+position = Vector2(880, 336)
+[node name="Post" type="Polygon2D" parent="Props/Lamp"]
+polygon = PackedVector2Array(-3, -18, 3, -18, 3, 19, -3, 19)
+color = Color(0.36, 0.31, 0.25, 1)
+[node name="Light" type="Polygon2D" parent="Props/Lamp"]
+position = Vector2(0, -23)
+polygon = PackedVector2Array(0, -8, 7, -4, 7, 4, 0, 8, -7, 4, -7, -4)
+color = Color(1, 0.79, 0.34, 1)
+
+[node name="TownLabel" type="Label" parent="Props"]
+position = Vector2(704, 768)
+text = "TOWN PLAZA"
+theme_override_colors/font_color = Color(0.84, 0.91, 0.96, 0.8)
+
+[node name="GuildLabel" type="Label" parent="Props"]
+position = Vector2(448, 424)
+text = "GUILD COURTYARD"
+theme_override_colors/font_color = Color(0.91, 0.78, 0.43, 0.9)
+
+[node name="GateLabel" type="Label" parent="Props"]
+position = Vector2(696, 372)
+text = "TOWN GATE"
+theme_override_colors/font_color = Color(0.92, 0.83, 0.62, 0.9)
+
+[node name="OutskirtsLabel" type="Label" parent="Props"]
+position = Vector2(704, 48)
+text = "OUTSKIRTS"
+theme_override_colors/font_color = Color(0.72, 0.9, 0.72, 0.85)
+
+[node name="Monsters" type="Node2D" parent="."]
+[node name="SlimeA" parent="Monsters" instance=ExtResource("3_monster")]
+starting_grid_position = Vector2i(20, 9)
+monster_id = "slime"
+xp_reward = 15
+loot_table_id = "slime_loot"
+aggro_type = "AGGRESSIVE"
+aggro_range = 3
+chase_range = 7
+[node name="SlimeB" parent="Monsters" instance=ExtResource("3_monster")]
+starting_grid_position = Vector2i(29, 8)
+monster_id = "slime"
+xp_reward = 15
+loot_table_id = "slime_loot"
+aggro_type = "AGGRESSIVE"
+aggro_range = 3
+chase_range = 7
+[node name="SlimeC" parent="Monsters" instance=ExtResource("3_monster")]
+starting_grid_position = Vector2i(37, 6)
+monster_id = "slime"
+xp_reward = 15
+loot_table_id = "slime_loot"
+aggro_type = "AGGRESSIVE"
+aggro_range = 3
+chase_range = 7
+[node name="SlimeD" parent="Monsters" instance=ExtResource("3_monster")]
+starting_grid_position = Vector2i(42, 9)
+monster_id = "slime"
+xp_reward = 15
+loot_table_id = "slime_loot"
+aggro_type = "AGGRESSIVE"
+aggro_range = 3
+chase_range = 7
+
+[node name="TrainingDummy" parent="Monsters" instance=ExtResource("3_monster")]
+starting_grid_position = Vector2i(20, 18)
+monster_id = "training_dummy"
+display_name = "Training Dummy"
+max_hp = 100
+xp_reward = 0
+loot_table_id = ""
+is_training_dummy = true
+attack_damage = 0
+aggro_type = "PASSIVE"
+aggro_range = 0
+chase_range = 0
+placeholder_color = Color(0.78, 0.68, 0.42, 1)
+[node name="TrainingDummyB" parent="Monsters" instance=ExtResource("3_monster")]
+starting_grid_position = Vector2i(22, 18)
+monster_id = "training_dummy"
+display_name = "Training Dummy"
+max_hp = 100
+xp_reward = 0
+loot_table_id = ""
+is_training_dummy = true
+attack_damage = 0
+aggro_type = "PASSIVE"
+aggro_range = 0
+chase_range = 0
+placeholder_color = Color(0.64, 0.56, 0.35, 1)
+
+[node name="Pickups" type="Node2D" parent="."]

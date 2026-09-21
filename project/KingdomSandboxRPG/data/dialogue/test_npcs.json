@@ -1,0 +1,47 @@
+{
+  "dialogues": {
+    "arin_intro": {
+      "start": "greeting",
+      "nodes": {
+        "greeting": { "speaker": "Arin", "text": "Nice weather today.", "expression": "happy", "next": "question" },
+        "question": {
+          "speaker": "Arin",
+          "text": "What do you think about leaving town someday?",
+          "expression": "neutral",
+          "choices": [
+            { "text": "I agree.", "next": "agree", "effects": { "affinity": 5, "trust": 5 } },
+            { "text": "I don't trust this.", "next": "distrust", "effects": { "affinity": -5, "respect": -2 } },
+            { "text": "I'd rather not answer.", "next": "decline" },
+            { "text": "Tell me what you really know.", "next": "secret", "requires": { "trust": 10 } }
+          ]
+        },
+        "agree": { "speaker": "Arin", "text": "Then perhaps we will see the road together one day.", "expression": "happy" },
+        "distrust": { "speaker": "Arin", "text": "Fair enough. The road asks a lot of anyone.", "expression": "sad" },
+        "decline": { "speaker": "Arin", "text": "No pressure. It is only a passing thought.", "expression": "neutral" }
+        ,"secret": { "speaker": "Arin", "text": "The old road is not as empty as it looks.", "expression": "surprised" }
+      }
+    },
+    "guild_master_intro": {
+      "start": "welcome",
+      "nodes": {
+        "welcome": { "speaker": "Guild Master", "text": "Welcome to the Adventurers' Guild.", "expression": "neutral", "next": "training" },
+        "training": { "speaker": "Guild Master", "text": "The training dummies are available if you want to practice.", "expression": "happy", "next": "jobs" },
+        "jobs": { "speaker": "Guild Master", "text": "Jobs will be available soon.", "expression": "neutral" }
+      }
+    },
+    "mira_intro": {
+      "start": "greeting",
+      "nodes": {
+        "greeting": { "speaker": "Mira", "text": "Welcome.", "expression": "happy", "next": "warning" },
+        "warning": { "speaker": "Mira", "text": "Be careful outside the city walls.", "expression": "sad" }
+      }
+    },
+    "rowan_intro": {
+      "start": "greeting",
+      "nodes": {
+        "greeting": { "speaker": "Rowan", "text": "I've been watching the roads.", "expression": "neutral", "next": "warning" },
+        "warning": { "speaker": "Rowan", "text": "Something strange has been happening lately.", "expression": "surprised" }
+      }
+    }
+  }
+}

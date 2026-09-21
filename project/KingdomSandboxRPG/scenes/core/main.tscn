@@ -1,0 +1,73 @@
+[gd_scene load_steps=18 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/main.gd" id="1_main"]
+[ext_resource type="PackedScene" path="res://scenes/world/grid_test_room.tscn" id="2_room"]
+[ext_resource type="PackedScene" path="res://scenes/characters/player.tscn" id="3_player"]
+[ext_resource type="PackedScene" path="res://scenes/ui/debug_hud.tscn" id="4_debug_hud"]
+[ext_resource type="PackedScene" path="res://scenes/ui/dialogue_box.tscn" id="5_dialogue_box"]
+[ext_resource type="Script" path="res://scripts/systems/dialogue_manager.gd" id="6_dialogue_manager"]
+[ext_resource type="Script" path="res://scripts/systems/relationship_system.gd" id="7_relationship_system"]
+[ext_resource type="Script" path="res://scripts/systems/inventory_system.gd" id="8_inventory_system"]
+[ext_resource type="PackedScene" path="res://scenes/ui/inventory_screen.tscn" id="9_inventory_screen"]
+[ext_resource type="PackedScene" path="res://scenes/ui/npc_interaction_menu.tscn" id="10_interaction_menu"]
+[ext_resource type="Script" path="res://scripts/systems/equipment_system.gd" id="11_equipment"]
+[ext_resource type="PackedScene" path="res://scenes/ui/combat_hud.tscn" id="12_combat_hud"]
+[ext_resource type="Script" path="res://scripts/systems/skill_system.gd" id="13_skill_system"]
+[ext_resource type="Script" path="res://scripts/systems/progression_system.gd" id="14_progression_system"]
+[ext_resource type="Script" path="res://scripts/systems/loot_system.gd" id="15_loot_system"]
+[ext_resource type="Script" path="res://scripts/systems/quest_system.gd" id="16_quest_system"]
+[ext_resource type="PackedScene" path="res://scenes/ui/quest_tracker.tscn" id="17_quest_tracker"]
+
+[node name="Main" type="Node"]
+script = ExtResource("1_main")
+
+[node name="WorldRoot" type="Node2D" parent="."]
+
+[node name="GridTestRoom" parent="WorldRoot" instance=ExtResource("2_room")]
+
+[node name="EntityRoot" type="Node2D" parent="."]
+
+[node name="Player" parent="EntityRoot" instance=ExtResource("3_player")]
+
+[node name="EffectsRoot" type="Node2D" parent="."]
+
+[node name="UIRoot" type="CanvasLayer" parent="."]
+
+[node name="DebugHUD" parent="UIRoot" instance=ExtResource("4_debug_hud")]
+
+[node name="QuestTracker" parent="UIRoot" instance=ExtResource("17_quest_tracker")]
+
+[node name="DialogueBox" parent="UIRoot" instance=ExtResource("5_dialogue_box")]
+
+[node name="NpcInteractionMenu" parent="UIRoot" instance=ExtResource("10_interaction_menu")]
+
+[node name="CombatHud" parent="UIRoot" instance=ExtResource("12_combat_hud")]
+
+[node name="ModalUIRoot" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="InventoryScreen" parent="ModalUIRoot" instance=ExtResource("9_inventory_screen")]
+
+[node name="DialogueManager" type="Node" parent="."]
+script = ExtResource("6_dialogue_manager")
+
+[node name="RelationshipSystem" type="Node" parent="."]
+script = ExtResource("7_relationship_system")
+
+[node name="InventorySystem" type="Node" parent="."]
+script = ExtResource("8_inventory_system")
+
+[node name="EquipmentSystem" type="Node" parent="."]
+script = ExtResource("11_equipment")
+
+[node name="SkillSystem" type="Node" parent="."]
+script = ExtResource("13_skill_system")
+
+[node name="ProgressionSystem" type="Node" parent="."]
+script = ExtResource("14_progression_system")
+
+[node name="LootSystem" type="Node" parent="."]
+script = ExtResource("15_loot_system")
+
+[node name="QuestSystem" type="Node" parent="."]
+script = ExtResource("16_quest_system")

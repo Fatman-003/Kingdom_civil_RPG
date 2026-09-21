@@ -1,0 +1,135 @@
+[gd_scene load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/ui/combat_hud.gd" id="1"]
+[node name="CombatHud" type="CanvasLayer"]
+script = ExtResource("1")
+[node name="HpLabel" type="Label" parent="."]
+offset_left = 18.0
+offset_top = 18.0
+theme_override_font_sizes/font_size = 22
+text = "HP 100 / 100"
+
+[node name="HpBar" type="ProgressBar" parent="."]
+offset_left = 18.0
+offset_top = 46.0
+offset_right = 258.0
+offset_bottom = 62.0
+max_value = 100.0
+value = 100.0
+show_percentage = false
+
+[node name="LevelUpLabel" type="Label" parent="."]
+visible = false
+offset_left = 430.0
+offset_top = 82.0
+offset_right = 850.0
+offset_bottom = 140.0
+theme_override_font_sizes/font_size = 20
+horizontal_alignment = 1
+
+[node name="ActionBar" type="HBoxContainer" parent="."]
+offset_left = 350.0
+offset_top = 638.0
+offset_right = 930.0
+offset_bottom = 708.0
+theme_override_constants/separation = 8
+
+[node name="AttackSlot" type="PanelContainer" parent="ActionBar"]
+custom_minimum_size = Vector2(108, 68)
+layout_mode = 2
+[node name="VBox" type="VBoxContainer" parent="ActionBar/AttackSlot"]
+layout_mode = 2
+[node name="Key" type="Label" parent="ActionBar/AttackSlot/VBox"]
+layout_mode = 2
+text = "[ A ]"
+horizontal_alignment = 1
+[node name="Name" type="Label" parent="ActionBar/AttackSlot/VBox"]
+layout_mode = 2
+text = "Basic Attack"
+horizontal_alignment = 1
+[node name="Cooldown" type="Label" parent="ActionBar/AttackSlot/VBox"]
+layout_mode = 2
+text = "Ready"
+horizontal_alignment = 1
+
+[node name="Skill1Slot" type="PanelContainer" parent="ActionBar"]
+custom_minimum_size = Vector2(108, 68)
+layout_mode = 2
+[node name="VBox" type="VBoxContainer" parent="ActionBar/Skill1Slot"]
+layout_mode = 2
+[node name="Key" type="Label" parent="ActionBar/Skill1Slot/VBox"]
+layout_mode = 2
+text = "[ Q ]"
+horizontal_alignment = 1
+[node name="Name" type="Label" parent="ActionBar/Skill1Slot/VBox"]
+layout_mode = 2
+text = "Empty"
+horizontal_alignment = 1
+[node name="Cooldown" type="Label" parent="ActionBar/Skill1Slot/VBox"]
+layout_mode = 2
+text = "Ready"
+horizontal_alignment = 1
+
+[node name="Skill2Slot" type="PanelContainer" parent="ActionBar"]
+custom_minimum_size = Vector2(108, 68)
+layout_mode = 2
+[node name="VBox" type="VBoxContainer" parent="ActionBar/Skill2Slot"]
+layout_mode = 2
+[node name="Key" type="Label" parent="ActionBar/Skill2Slot/VBox"]
+layout_mode = 2
+text = "[ W ]"
+horizontal_alignment = 1
+[node name="Name" type="Label" parent="ActionBar/Skill2Slot/VBox"]
+layout_mode = 2
+text = "Empty"
+horizontal_alignment = 1
+[node name="Cooldown" type="Label" parent="ActionBar/Skill2Slot/VBox"]
+layout_mode = 2
+text = "Ready"
+horizontal_alignment = 1
+
+[node name="Skill3Slot" type="PanelContainer" parent="ActionBar"]
+custom_minimum_size = Vector2(108, 68)
+layout_mode = 2
+[node name="VBox" type="VBoxContainer" parent="ActionBar/Skill3Slot"]
+layout_mode = 2
+[node name="Key" type="Label" parent="ActionBar/Skill3Slot/VBox"]
+layout_mode = 2
+text = "[ E ]"
+horizontal_alignment = 1
+[node name="Name" type="Label" parent="ActionBar/Skill3Slot/VBox"]
+layout_mode = 2
+text = "Empty"
+horizontal_alignment = 1
+[node name="Cooldown" type="Label" parent="ActionBar/Skill3Slot/VBox"]
+layout_mode = 2
+text = "Ready"
+horizontal_alignment = 1
+
+[node name="Skill4Slot" type="PanelContainer" parent="ActionBar"]
+custom_minimum_size = Vector2(108, 68)
+layout_mode = 2
+[node name="VBox" type="VBoxContainer" parent="ActionBar/Skill4Slot"]
+layout_mode = 2
+[node name="Key" type="Label" parent="ActionBar/Skill4Slot/VBox"]
+layout_mode = 2
+text = "[ R ]"
+horizontal_alignment = 1
+[node name="Name" type="Label" parent="ActionBar/Skill4Slot/VBox"]
+layout_mode = 2
+text = "Empty"
+horizontal_alignment = 1
+[node name="Cooldown" type="Label" parent="ActionBar/Skill4Slot/VBox"]
+layout_mode = 2
+text = "Ready"
+horizontal_alignment = 1
+[node name="Defeat" type="PanelContainer" parent="."]
+visible = false
+offset_left = 430.0
+offset_top = 250.0
+offset_right = 850.0
+offset_bottom = 470.0
+[node name="Label" type="Label" parent="Defeat"]
+layout_mode = 2
+text = "YOU WERE DEFEATED\n\nEnter / Space: Restart"
+horizontal_alignment = 1
+vertical_alignment = 1

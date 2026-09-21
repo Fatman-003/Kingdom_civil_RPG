@@ -1,0 +1,21 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/characters/npc.gd" id="1_npc"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_npc"]
+size = Vector2(22, 22)
+
+[node name="NPC" type="CharacterBody2D"]
+script = ExtResource("1_npc")
+
+[node name="Shadow" type="Polygon2D" parent="."]
+position = Vector2(0, 9)
+polygon = PackedVector2Array(-10, 0, -7, -3, 0, -4, 7, -3, 10, 0, 7, 3, 0, 4, -7, 3)
+color = Color(0.03, 0.06, 0.08, 0.38)
+
+[node name="Visual" type="Polygon2D" parent="."]
+polygon = PackedVector2Array(0, -11, 10, 0, 0, 11, -10, 0)
+color = Color(0.96, 0.57, 0.34, 1)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_npc")

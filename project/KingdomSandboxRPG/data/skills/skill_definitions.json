@@ -1,0 +1,64 @@
+{
+  "skills": {
+    "combat_training": {
+      "skill_id": "combat_training",
+      "display_name": "Combat Training",
+      "description": "Fundamental combat discipline that opens the first techniques.",
+      "skill_type": "PASSIVE",
+      "cooldown": 0.0,
+      "damage_multiplier": 1.0,
+      "prerequisites": [],
+      "skill_point_cost": 1
+    },
+    "power_strike": {
+      "skill_id": "power_strike",
+      "display_name": "Power Strike",
+      "description": "A forceful melee strike with increased damage.",
+      "skill_type": "ACTIVE",
+      "cooldown": 2.0,
+      "damage_multiplier": 1.5,
+      "prerequisites": ["combat_training"],
+      "skill_point_cost": 1
+    },
+    "heavy_strike": {
+      "skill_id": "heavy_strike",
+      "display_name": "Heavy Strike",
+      "description": "A slow, powerful melee attack.",
+      "skill_type": "ACTIVE",
+      "cooldown": 4.0,
+      "damage_multiplier": 2.0,
+      "prerequisites": ["power_strike"],
+      "skill_point_cost": 1
+    },
+    "quick_slash": {
+      "skill_id": "quick_slash",
+      "display_name": "Quick Slash",
+      "description": "A fast melee technique with a short recovery.",
+      "skill_type": "ACTIVE",
+      "cooldown": 1.2,
+      "damage_multiplier": 1.25,
+      "prerequisites": ["combat_training"],
+      "skill_point_cost": 1
+    },
+    "double_slash": {
+      "skill_id": "double_slash",
+      "display_name": "Double Slash",
+      "description": "A practiced follow-up to Quick Slash.",
+      "skill_type": "ACTIVE",
+      "cooldown": 3.0,
+      "damage_multiplier": 1.75,
+      "prerequisites": ["quick_slash"],
+      "skill_point_cost": 1
+    },
+    "battle_focus": {
+      "skill_id": "battle_focus",
+      "display_name": "Battle Focus",
+      "description": "A passive focus technique that prepares future combat growth.",
+      "skill_type": "PASSIVE",
+      "cooldown": 0.0,
+      "damage_multiplier": 1.0,
+      "prerequisites": ["combat_training"],
+      "skill_point_cost": 1
+    }
+  }
+}

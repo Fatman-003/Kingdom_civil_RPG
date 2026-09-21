@@ -1,0 +1,43 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/debug_hud.gd" id="1_debug_hud"]
+
+[node name="DebugHUD" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("1_debug_hud")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 240.0
+offset_bottom = 140.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+
+[node name="ProjectLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Kingdom Sandbox RPG"
+
+[node name="MilestoneLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Prototype"
+
+[node name="FPSLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "FPS: pending"
+
+[node name="GridLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Grid: --, --"
+
+[node name="FacingLabel" type="Label" parent="MarginContainer/VBoxContainer"]
+layout_mode = 2
+text = "Facing: DOWN"
